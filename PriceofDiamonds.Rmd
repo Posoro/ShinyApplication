@@ -1,0 +1,99 @@
+---
+title: "The Price of Diamond "
+author: "Patrick Osoro"
+date: "October 25, 2016"
+output:
+  slidy_presentation: default
+  ioslides_presentation: default
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+##         Diamonds Diamond Diamond
+
+Everybody wants to be a diamond but very few are willing to get cut and achieve clarity!!!
+
+
+
+## The price of diamond varies by property:
+
+- Cut
+- Clarity
+- Color
+
+##The Diamonds dataset of R
+```{r diamonds, echo = FALSE}
+library(ggplot2)
+data(diamonds)
+summary(diamonds)
+```
+
+## Review the prices of Diamond by properties
+
+
+```{r, echo = FALSE}
+library(shiny)
+library(ggplot2)
+library(plyr) 
+
+shinyApp(
+  
+ui=shinyUI(pageWithSidebar(
+  
+  # Application title
+  headerPanel(
+    
+    h1("Diamond Prices by Property", align="center",style = "color:red"),
+    br()
+   
+    
+),
+  
+             
+  
+  sidebarPanel(
+    
+    selectInput("diamondProperty", "Choose a property:", 
+                choices = c("cut","clarity",'color')), 
+    
+    h4("User Instructions"),
+    div("This application uses the R diamond dataset and shows the variation of diamond price per the diamond property.
+    Review the prices by varying the property using the lookup list above.If you are interested in the average and median price lists per diamond property, 
+        then click on the tab labelled 'averages'", style = "color:blue")
+    
+  ),
+  
+  
+  mainPanel(
+    tabsetPanel(
+      tabPanel("Distribution", plotOutput("priceDistribution")),
+      tabPanel("Averages", tableOutput("averagesTable"))
+      )
+  )
+)),
+
+server=shinyServer(function(input,output){
+  
+  output$priceDistribution <- renderPlot({
+    p  <- ggplot(diamonds) +
+            geom_density(aes_string(x = "price", fill = input$diamondProperty), alpha=0.3) +
+              scale_x_log10()
+    title <- paste("price by ",input$diamondProperty)
+    print(p + ggtitle(title))
+    
+  })
+  
+  output$averagesTable <- renderTable({
+    ddply(diamonds,c(input$diamondProperty),summarise, averagePrice=mean(price), medianPrice=median(price))    
+    
+  })
+}
+
+)
+
+
+)
+```
+https://posoro.shinyapps.io/diamondprices/ 
