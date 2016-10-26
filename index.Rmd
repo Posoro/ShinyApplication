@@ -96,4 +96,4 @@ server=shinyServer(function(input,output){
 
 )
 ```
-https://posoro.shinyapps.io/diamondprices/ 
+https://posoro.shinyapps.io/diamondprices/
